@@ -1,7 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300&display=swap');
+
+
+
 body{
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: antiquewhite;
+    font-family: 'Kalam', cursive;
 }
 
 .gameboard{
@@ -10,7 +16,6 @@ body{
     justify-content: space-around;
     min-width: 600px;
     min-height: 600px;
-    border: solid 1px black;
 }
 
 .row{
@@ -36,7 +41,7 @@ body{
 .cardback{
     position: absolute;
     z-index: 10;
-    background-color: blueviolet;
+    background-color: rgb(174, 135, 209);
     border-radius: 5px;
     height: 100%;
     width: 100%;
@@ -48,8 +53,14 @@ body{
 }
 
 .card:hover{
+    z-index: 100;
     box-shadow: 0 0 10px yellow;
     transform: scale(1.1);
+}
+
+.card.hardmode{
+    width: 90px;
+    height: 90px;
 }
 
 .card.focus{
@@ -61,6 +72,7 @@ body{
 }
 
 .card.paired{
+    rotate: 360deg;
     transform: scale(0);
 }
 
@@ -71,8 +83,35 @@ img{
     width: 80%;
 }
 
+.modal{
+    position: fixed;
+    top: 30%;
+    padding-bottom: 20px;
+    min-width: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    border: solid 1px white;
+    border-radius: 5px;
+    background-color: rgb(216, 195, 195);
+    transition: all 0.3s ease-in-out;
+    box-shadow: 10px 10px 10px black;
 
+}
+
+.modal.inactive{
+    transform: scale(0);
+}
+
+.modalButton{
+    width: 60px;
+}
 
 .gameboard.unavailable{
+    pointer-events: none;
+}
+.unavailable{
     pointer-events: none;
 }

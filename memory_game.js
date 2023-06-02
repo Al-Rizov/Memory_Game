@@ -1,6 +1,13 @@
 const gameboard = document.getElementById('gameboard');
 const rolling = document.getElementsByClassName('row');
 const cards = document.getElementsByClassName('card');
+const modal = document.getElementById('modal');
+const modalText = document.getElementById('modalText');
+const easyBtn = document.getElementById('easyBtn');
+const mediumBtn = document.getElementById('mediumBtn');
+const hardBtn = document.getElementById('hardBtn');
+
+
 const images = [
     'Images/Bluto.png',
     'Images/Popeye.png',
@@ -24,25 +31,26 @@ const images = [
 
 ]
 
+let hardmode = false;
+let pairsLeft;
+let movesMade = 0;
+let score = 0;
 let allpairs = [];
 let imageCompare = [];
 let flippedCards = [];
 let flippedBacks = [];
 
 /*
-1. Randomize Pairs. ok
-2. Insert Images. ok
-3. Create a 'PairMade' function. ok
-4. Create Cardback.
-5. Create a HideAfterTwo function.
+1. Make counters for cards left and moves made. - OK
+2. Make a restart game function. - OK
+3. Add difficulty
 */
 
-populateGameBoard(4, 4);
-assignPairs();
-drawImages();
+
 
 function populateGameBoard(rows, cards) {
-    
+    pairsLeft = (rows*cards)/2;
+
     for(i=0; i<rows; i++) {
         const row = document.createElement('div');
         gameboard.appendChild(row);
@@ -96,26 +104,53 @@ function drawImages(){
 }
 
 
-gameboard.addEventListener('click', (ev)=>{
+function restartGame(newrows, newcards) {
     
-    let card = ev.target.closest('[data-pair]');
+    allpairs =[];
+    movesMade = 0;
+    modal.classList.add('inactive');
+    while(gameboard.childElementCount>0){gameboard.removeChild(gameboard.firstChild)}
+    populateGameBoard(newrows, newcards);
+    if(hardmode===true){for(i=0; i<cards.length; i++){cards[i].classList.add('hardmode')}};
+    assignPairs();
+    drawImages();
+}
+
+
+gameboard.addEventListener('click', (ev)=>{
+    if(!ev.target.classList.contains('flipped')){
+    movesMade++;
+    checkForPair(ev);}
+})
+
+easyBtn.addEventListener('click',()=> {restartGame(4,4)
+                                        score=100;});
+mediumBtn.addEventListener('click',()=> {restartGame(4,5)
+                                        score=150;});
+hardBtn.addEventListener('click',()=> { hardmode=true;
+                                        restartGame(6,6)
+                                        score=200;});
+
+
+function checkForPair(event){
+    
+    let card = event.target.closest('[data-pair]');
     card.classList.add('focus');
     flippedCards.push(card);
-    
     let pairNumber = card.getAttribute('data-pair');
 
-    let flip = ev.target.closest('.cardback');
+    let flip = event.target.closest('.cardback');
     flippedBacks.push(flip);
-    flip.classList.add('flipped')
-    
-    console.log(pairNumber);
+    flip.classList.add('flipped');
     imageCompare.push(pairNumber);
-    console.log(imageCompare);
+    
     
 
+    
     if(imageCompare.length ===2){
         gameboard.classList.add('unavailable');
         if(imageCompare[0] === imageCompare[1]) {
+            pairsLeft--;
             flippedCards.forEach(el=> el.classList.add('gratz'))
              setTimeout(()=>{
                 flippedCards.forEach(el=> el.classList.remove('gratz'));
@@ -140,5 +175,10 @@ gameboard.addEventListener('click', (ev)=>{
         
     }
 
-})
-
+    if(pairsLeft===0){
+        hardmode=false;
+        score = score-(movesMade/2);
+        modalText.innerText = `Your score is ${score} Would you like to play again?`;
+        modal.classList.remove('inactive');
+    };
+}
